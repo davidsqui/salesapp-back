@@ -1,5 +1,7 @@
 package com.dasc.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -14,7 +16,9 @@ import lombok.Data;
 @Entity
 @Table(name = "products")
 @Data
-public class Product {
+public class Product implements Serializable {
+
+	private static final long serialVersionUID = -2727589912230732261L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +27,6 @@ public class Product {
 	private String name;
 
 	private double price;
-
-	private Integer stock;
 
 	@ManyToOne
 	@JoinColumn(name = "status_id", nullable = false, foreignKey = @ForeignKey(name = "fk_product_status"))
