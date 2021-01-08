@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.dasc.constants.ProductConstant;
+import com.dasc.exception.ApiException;
+import com.dasc.model.Product;
 import com.dasc.model.ProductStatus;
 import com.dasc.model.Sale;
 import com.dasc.model.SaleDetail;
@@ -18,6 +20,9 @@ import com.dasc.repository.ProductStatusRepository;
 import com.dasc.repository.SaleRepository;
 import com.dasc.service.SaleService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class SaleServiceImpl implements SaleService {
 
@@ -40,8 +45,14 @@ public class SaleServiceImpl implements SaleService {
 
 	@Override
 	public Sale findById(Integer id) {
-		Optional<Sale> op = saleRepository.findById(id);
-		return op.isPresent() ? op.get() : new Sale();
+		Optional<Sale> saleOptional = saleRepository.findById(id);
+
+		if (!saleOptional.isPresent()) {
+			log.info(String.format("No se encontró la venta %s", id));
+			throw new ApiException(String.format("No se encontró la venta %s", id));
+		}
+
+		return saleOptional.get();
 	}
 
 	@Override
@@ -50,11 +61,27 @@ public class SaleServiceImpl implements SaleService {
 		ProductStatus productStatus = productStatusReporsitory.findById(ProductConstant.PRODUCT_STATUS_SOLD_ID).get();
 
 		sale.getDetails().forEach(detail -> {
-			double subTotal = detail.getAmount() * detail.getProduct().getPrice();
+
+			Optional<Product> productToSell = productRepository.findById(detail.getProduct().getId());
+
+			if (!productToSell.isPresent()) {
+				throw new ApiException(String.format("El producto %s no existe", detail.getProduct().getId()));
+			}
+
+			if (productToSell.get().getStatus().getId() == ProductConstant.PRODUCT_STATUS_STOLEN_ID
+					|| productToSell.get().getStatus().getId() == ProductConstant.PRODUCT_STATUS_LOST_ID
+					|| productToSell.get().getStatus().getId() == ProductConstant.PRODUCT_STATUS_SOLD_ID) {
+				throw new ApiException("El producto no está disponible");
+			}
+
+			double subTotal = detail.getAmount() * productToSell.get().getPrice();
 
 			detail.setSubTotal(subTotal);
 			detail.setSale(sale);
+			detail.setProduct(productToSell.get());
+
 			detail.getProduct().setStatus(productStatus);
+			productRepository.updateStatus(detail.getProduct().getId(), productStatus);
 		});
 
 		double total = sale.getDetails().stream().map(SaleDetail::getSubTotal).reduce(0.00, (a, b) -> a + b);

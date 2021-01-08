@@ -12,14 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import lombok.extern.slf4j.Slf4j;
+
 @ControllerAdvice
 @RestController
+@Slf4j
 public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
-	public final ResponseEntity<Object> manejarTodasExcepciones(ApiException ex, WebRequest request) {
+	public final ResponseEntity<Object> manejarTodasExcepciones(Exception ex, WebRequest request) {
 		ExceptionResponse er = new ExceptionResponse(LocalDateTime.now(), ex.getMessage(),
 				request.getDescription(false));
+		log.error("error", ex);
 		return new ResponseEntity<Object>(er, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
