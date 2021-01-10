@@ -58,7 +58,7 @@ public class SaleServiceImpl implements SaleService {
 	@Override
 	@Transactional
 	public Sale save(Sale sale) {
-		ProductStatus productStatus = productStatusReporsitory.findById(ProductConstant.PRODUCT_STATUS_SOLD_ID).get();
+		ProductStatus statusSold = productStatusReporsitory.findById(ProductConstant.PRODUCT_STATUS_SOLD_ID).get();
 
 		sale.getDetails().forEach(detail -> {
 
@@ -80,8 +80,8 @@ public class SaleServiceImpl implements SaleService {
 			detail.setSale(sale);
 			detail.setProduct(productToSell.get());
 
-			detail.getProduct().setStatus(productStatus);
-			productRepository.updateStatus(detail.getProduct().getId(), productStatus);
+			detail.getProduct().setStatus(statusSold);
+			productRepository.updateStatus(detail.getProduct().getId(), statusSold);
 		});
 
 		double total = sale.getDetails().stream().map(SaleDetail::getSubTotal).reduce(0.00, (a, b) -> a + b);

@@ -1,11 +1,8 @@
 package com.dasc.service.impl;
 
-import java.util.Optional;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.dasc.exception.ApiException;
 import com.dasc.model.User;
 import com.dasc.repository.UserRepository;
 import com.dasc.service.UserService;
@@ -20,33 +17,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Page<User> findAll(Pageable pageable) {
+	public User logIn(String email, String password) {
 
-		return userRepository.findAll(pageable);
-	}
+		User user = userRepository.findByEmailAndPassword(email, password);
 
-	@Override
-	public User findById(Integer id) {
-		Optional<User> op = userRepository.findById(id);
-		return op.isPresent() ? op.get() : new User();
-	}
+		if (user == null) {
+			throw new ApiException("Credenciales incorrectas, vuelva a intentarlo");
+		}
 
-	@Override
-	public User save(User user) {
-
-		return userRepository.save(user);
-	}
-
-	@Override
-	public User update(User user) {
-
-		return userRepository.save(user);
-	}
-
-	@Override
-	public void delete(Integer id) {
-		userRepository.deleteById(id);
-
+		return user;
 	}
 
 }
