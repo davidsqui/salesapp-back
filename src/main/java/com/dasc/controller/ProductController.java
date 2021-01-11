@@ -1,5 +1,7 @@
 package com.dasc.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -14,10 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dasc.model.Product;
+import com.dasc.model.ProductStatus;
 import com.dasc.service.ProductService;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("api/v1/products")
 public class ProductController {
 
 	private ProductService productService;
@@ -36,6 +39,12 @@ public class ProductController {
 	private ResponseEntity<Product> findById(@PathVariable("id") Integer id) {
 		Product product = productService.findById(id);
 		return new ResponseEntity<>(product, HttpStatus.OK);
+	}
+
+	@GetMapping("/status")
+	private ResponseEntity<List<ProductStatus>> findAllStatus() {
+		List<ProductStatus> status = productService.findAllStatus();
+		return new ResponseEntity<>(status, HttpStatus.OK);
 	}
 
 	@PostMapping

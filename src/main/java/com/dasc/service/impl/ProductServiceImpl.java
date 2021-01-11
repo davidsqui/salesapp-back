@@ -1,5 +1,6 @@
 package com.dasc.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -77,6 +78,12 @@ public class ProductServiceImpl implements ProductService {
 
 		productRepository.deleteById(id);
 
+	}
+
+	@Override
+	public List<ProductStatus> findAllStatus() {
+
+		return productStatusRepository.findAll();
 	}
 
 }

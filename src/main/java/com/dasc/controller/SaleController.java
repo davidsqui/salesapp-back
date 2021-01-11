@@ -16,7 +16,7 @@ import com.dasc.model.Sale;
 import com.dasc.service.SaleService;
 
 @RestController
-@RequestMapping("/sales")
+@RequestMapping("api/v1/sales")
 public class SaleController {
 
 	private SaleService saleService;
