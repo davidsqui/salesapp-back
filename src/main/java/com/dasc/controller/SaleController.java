@@ -43,10 +43,4 @@ public class SaleController {
 		return new ResponseEntity<>(savedSale, HttpStatus.CREATED);
 	}
 
-	@PutMapping
-	private ResponseEntity<Sale> update(@RequestBody Sale sale) {
-		Sale updatedSale = saleService.update(sale);
-		return new ResponseEntity<>(updatedSale, HttpStatus.OK);
-	}
-
 }

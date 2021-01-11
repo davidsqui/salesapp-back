@@ -2,6 +2,7 @@ package com.dasc.model;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -24,12 +25,17 @@ public class Product implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
+	@Column(nullable = false)
 	private String name;
 
+	@Column(nullable = false)
 	private double price;
 
 	@ManyToOne
 	@JoinColumn(name = "status_id", nullable = false, foreignKey = @ForeignKey(name = "fk_product_status"))
 	private ProductStatus status;
+	
+	@Column(nullable = false)
+	private int modifiedBy;
 
 }
